@@ -11,16 +11,31 @@ const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 async function generateBibleVerse() {
     try {
-        const prompt = `聖書から、毎日の励ましとなる短い一節を1つ挙げてください。
-以下のJSON形式で出力してください。他の説明は不要です：
+        const prompt = `Generate a bible verse in both English and Japanese.
+Please provide the output in the following JSON format only:
 
 {
-    "book": "書名",
-    "chapter": "章番号",
-    "verse": "節番号",
-    "content": "聖句の内容",
-    "explanation": "100文字以内の解説"
-}`;
+    "en": {
+        "book": "Book name in English",
+        "chapter": "Chapter number",
+        "verse": "Verse number",
+        "content": "Bible verse in English",
+        "explanation": "Brief explanation in English (max 100 chars)"
+    },
+    "ja": {
+        "book": "書名（日本語）",
+        "chapter": "章番号",
+        "verse": "節番号",
+        "content": "聖句（日本語）",
+        "explanation": "簡潔な意味の解説（100文字以内）"
+    }
+}
+
+Important:
+- Use the same verse for both languages
+- Keep explanations concise
+- Ensure accurate translation
+- Return only the JSON, no additional text`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -32,9 +47,11 @@ async function generateBibleVerse() {
             
             // 必須フィールドの確認
             const requiredFields = ['book', 'chapter', 'verse', 'content', 'explanation'];
-            for (const field of requiredFields) {
-                if (!verse_data[field]) {
-                    throw new Error(`Missing required field: ${field}`);
+            for (const lang of ['en', 'ja']) {
+                for (const field of requiredFields) {
+                    if (!verse_data[lang] || !verse_data[lang][field]) {
+                        throw new Error(`Missing required field: ${lang}.${field}`);
+                    }
                 }
             }
             
@@ -49,9 +66,11 @@ async function generateBibleVerse() {
             
             // 必須フィールドの確認
             const requiredFields = ['book', 'chapter', 'verse', 'content', 'explanation'];
-            for (const field of requiredFields) {
-                if (!verse_data[field]) {
-                    throw new Error(`Missing required field: ${field}`);
+            for (const lang of ['en', 'ja']) {
+                for (const field of requiredFields) {
+                    if (!verse_data[lang] || !verse_data[lang][field]) {
+                        throw new Error(`Missing required field: ${lang}.${field}`);
+                    }
                 }
             }
             
@@ -79,9 +98,12 @@ async function postToDiscord(verseData) {
         // Discordメッセージの整形
         const message = {
             embeds: [{
-                title: `📖 今日の聖書の言葉 (${currentTime})`,
-                description: `**${verseData.book} ${verseData.chapter}章${verseData.verse}節**\n\n${verseData.content}\n\n💭 *${verseData.explanation}*`,
-                color: 0x7289DA
+                title: `📖 Today's Bible Verse / 今日の聖書の言葉 (${currentTime})`,
+                description: `**${verseData.en.book} ${verseData.en.chapter}:${verseData.en.verse}**\n${verseData.en.content}\n💭 *${verseData.en.explanation}*\n\n**${verseData.ja.book} ${verseData.ja.chapter}章${verseData.ja.verse}節**\n${verseData.ja.content}\n💭 *${verseData.ja.explanation}*`,
+                color: 0x7289DA,
+                footer: {
+                    text: "🌏 English & 日本語"
+                }
             }]
         };
 
