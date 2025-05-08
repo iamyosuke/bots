@@ -7,33 +7,56 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
 // Gemini APIの設定
 const genai = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genai.getGenerativeModel({ model: 'gemini-pro' });
+const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 async function generateBibleVerse() {
     try {
-        const prompt = `
-        聖書から、毎日の励ましとなる短い一節を1つ挙げてください。
-        以下の形式で出力してください：
-        - 書名、章、節番号
-        - 聖句の内容
-        - 簡潔な解説（100文字以内）
-        
-        出力は必ずJSON形式で、以下のキーを含めてください：
-        {
-            "book": "書名",
-            "chapter": "章",
-            "verse": "節",
-            "content": "聖句の内容",
-            "explanation": "解説"
-        }
-        `;
+        const prompt = `聖書から、毎日の励ましとなる短い一節を1つ挙げてください。
+以下のJSON形式で出力してください。他の説明は不要です：
+
+{
+    "book": "書名",
+    "chapter": "章番号",
+    "verse": "節番号",
+    "content": "聖句の内容",
+    "explanation": "100文字以内の解説"
+}`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
         
-        // JSONとしてパース
-        return JSON.parse(text);
+        try {
+            // 直接JSONとしてパースを試みる
+            const verse_data = JSON.parse(text);
+            
+            // 必須フィールドの確認
+            const requiredFields = ['book', 'chapter', 'verse', 'content', 'explanation'];
+            for (const field of requiredFields) {
+                if (!verse_data[field]) {
+                    throw new Error(`Missing required field: ${field}`);
+                }
+            }
+            
+            return verse_data;
+        } catch (parseError) {
+            // JSONパースに失敗した場合、テキストからJSONを抽出して再試行
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                throw new Error('JSON not found in response');
+            }
+            const verse_data = JSON.parse(jsonMatch[0]);
+            
+            // 必須フィールドの確認
+            const requiredFields = ['book', 'chapter', 'verse', 'content', 'explanation'];
+            for (const field of requiredFields) {
+                if (!verse_data[field]) {
+                    throw new Error(`Missing required field: ${field}`);
+                }
+            }
+            
+            return verse_data;
+        }
     } catch (error) {
         console.error('Error generating bible verse:', error);
         return null;
