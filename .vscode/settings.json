@@ -1,3 +1,6 @@
 {
-  "workbench.colorCustomizations": {}
+  "workbench.colorCustomizations": {},
+  "github-actions.workflows.pinned.workflows": [
+    ".github/workflows/daily-bible.yml"
+  ]
 }
