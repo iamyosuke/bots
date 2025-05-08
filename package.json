@@ -4,7 +4,8 @@
   "description": "Daily Bible verse bot using Google Gemini API and Discord",
   "main": "fetch_and_post.js",
   "scripts": {
-    "start": "node fetch_and_post.js"
+    "start": "node fetch_and_post.js",
+    "japanese-word": "node japanese_word_bot.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.0",
