@@ -2,8 +2,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import fetch from 'node-fetch';
 
 // Get environment variables
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const GEMINI_API_KEY = process.env.JAPANESE_BOT_GEMINI_API_KEY;
+const DISCORD_WEBHOOK_URL = process.env.JAPANESE_BOT_DISCORD_WEBHOOK;
 
 // Configure Gemini API
 const genai = new GoogleGenerativeAI(GEMINI_API_KEY);
