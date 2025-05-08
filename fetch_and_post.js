@@ -7,12 +7,24 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
 // Gemini APIの設定
 const genai = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+const model = genai.getGenerativeModel({ 
+    model: 'gemini-2.0-flash',
+    generationConfig: {
+        temperature: 0.9,  // 0.0から1.0の間で設定。高いほど創造的な応答になります
+    }
+});
 
 async function generateBibleVerse() {
     try {
-        const prompt = `Generate a bible verse in both English and Japanese.
-Please provide the output in the following JSON format only:
+        // Add randomization to the prompt
+        const categories = [
+            'love', 'faith', 'hope', 'wisdom', 'courage', 'peace', 
+            'forgiveness', 'salvation', 'prayer', 'grace'
+        ];
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        
+        const prompt = `Generate a random bible verse about ${randomCategory} in both English and Japanese.
+Please ensure it's different from John 3:16 and provide the output in the following JSON format only:
 
 {
     "en": {
@@ -20,21 +32,24 @@ Please provide the output in the following JSON format only:
         "chapter": "Chapter number",
         "verse": "Verse number",
         "content": "Bible verse in English",
-        "explanation": "Brief explanation in English (max 100 chars)"
+        "explanation": "A clear, practical explanation that relates to daily life (max 100 chars)"
     },
     "ja": {
         "book": "書名（日本語）",
         "chapter": "章番号",
         "verse": "節番号",
         "content": "聖句（日本語）",
-        "explanation": "簡潔な意味の解説（100文字以内）"
+        "explanation": "日常生活に関連づけた、実践的でわかりやすい解説（100文字以内）"
     }
 }
 
 Important:
 - Use the same verse for both languages
-- Keep explanations concise
-- Ensure accurate translation
+- Make explanations practical and relatable to everyday life
+- Use simple, clear language in both explanations
+- Ensure Japanese explanation uses natural, conversational language (です・ます調)
+- Choose a verse that strongly relates to ${randomCategory}
+- For Japanese explanation, avoid literary style and use modern Japanese
 - Return only the JSON, no additional text`;
 
         const result = await model.generateContent(prompt);
