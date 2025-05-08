@@ -2,7 +2,7 @@ name: Daily Bible Verse
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
+    - cron: '0 0 * * *'  # 日本時間朝8時
   workflow_dispatch:  # 手動実行用
 
 jobs:
