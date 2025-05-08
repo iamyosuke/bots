@@ -1,0 +1,14 @@
+{
+  "name": "daily-bible",
+  "version": "1.0.0",
+  "description": "Daily Bible verse bot using Google Gemini API and Discord",
+  "main": "fetch_and_post.js",
+  "scripts": {
+    "start": "node fetch_and_post.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.0",
+    "node-fetch": "^2.6.7"
+  },
+  "type": "module"
+} 
