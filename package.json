@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start:bible": "node fetch_and_post.js",
-    "start:japanese": "node japanese_word_bot.js"
+    "start:japanese": "node japanese_word_bot.js",
+    "start:japanese_arabic": "node japanese_word_bot_arabic.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.0",
