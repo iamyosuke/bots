@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -26,6 +26,6 @@ jobs:
 
       - name: Run Japanese Word Bot
         env:
-          JAPANESE_BOT_DISCORD_WEBHOOK: ${{ secrets.JAPANESE_BOT_DISCORD_WEBHOOK }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          JAPANESE_BOT_DISCORD_WEBHOOK: ${{ secrets.JAPANESE_ARAB_BOT_DISCORD_WEBHOOK }}
         run: npm run start:japanese 

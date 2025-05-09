@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import fetch from 'node-fetch';
 
 // Get environment variables
-const GEMINI_API_KEY = process.env.JAPANESE_BOT_GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.JAPANESE_BOT_DISCORD_WEBHOOK;
 
 // Configure Gemini API
@@ -23,32 +23,34 @@ async function generateJapaneseWord() {
         ];
         const randomCategory = categories[Math.floor(Math.random() * categories.length)];
         
-        const prompt = `Generate a Japanese vocabulary word related to ${randomCategory} in the following JSON format only:
+        const prompt = `Generate a Japanese vocabulary word that is especially useful or interesting for Arabic speakers, related to ${randomCategory}, in the following JSON format only:
 
 {
     "word": {
         "japanese": "日本語の単語",
         "reading": "ひらがなでの読み方",
         "romaji": "romaji reading",
+        "arabic": "Arabic translation",
         "english": "English translation",
         "partOfSpeech": "noun/verb/adjective/etc",
         "level": "N5/N4/N3/N2/N1",
         "example": {
             "japanese": "例文",
             "reading": "れいぶんのよみかた",
+            "arabic": "مثال باللغة العربية",
             "english": "Example sentence translation"
         },
-        "notes": "Brief cultural or usage notes (max 100 chars)",
+        "notes": "Brief cultural or usage notes for Arabic speakers (max 100 chars, in English or Arabic)",
         "category": "${randomCategory}"
     }
 }
 
 Important:
-- Choose a word appropriate for Japanese learners
-- Ensure the example sentence is practical and commonly used
+- Choose a word that is practical or interesting for Arabic speakers learning Japanese
+- Include an accurate Arabic translation for both the word and the example sentence
 - Provide accurate readings in both hiragana and romaji
 - Include JLPT level estimation
-- Make notes practical and helpful for learners
+- Make notes practical and helpful for Arabic learners (in English or Arabic)
 - Return only the JSON, no additional text`;
 
         const result = await model.generateContent(prompt);
@@ -67,7 +69,7 @@ Important:
             }
             
             // Verify example fields
-            const exampleFields = ['japanese', 'reading', 'english'];
+            const exampleFields = ['japanese', 'reading', 'arabic', 'english'];
             for (const field of exampleFields) {
                 if (!word_data.word.example[field]) {
                     throw new Error(`Missing required field: word.example.${field}`);
@@ -104,35 +106,35 @@ async function postToDiscord(wordData) {
         // Format Discord message
         const message = {
             embeds: [{
-                title: `📝 Japanese Word of the Day (${currentTime})`,
+                title: `📝 كلمة يابانية لليوم (${currentTime})`,
                 fields: [
                     {
-                        name: "Word",
-                        value: `${wordData.word.japanese} (${wordData.word.reading})\n*${wordData.word.romaji}*`,
+                        name: "الكلمة",
+                        value: `${wordData.word.japanese}（${wordData.word.reading}）\n*${wordData.word.romaji}*`,
                         inline: true
                     },
                     {
-                        name: "Meaning",
-                        value: `${wordData.word.english}\n*${wordData.word.partOfSpeech}*`,
+                        name: "المعنى",
+                        value: `${wordData.word.arabic}\n*${wordData.word.partOfSpeech}*`,
                         inline: true
                     },
                     {
-                        name: "Level",
+                        name: "المستوى",
                         value: wordData.word.level,
                         inline: true
                     },
                     {
-                        name: "Example",
-                        value: `${wordData.word.example.japanese}\n${wordData.word.example.reading}\n*${wordData.word.example.english}*`
+                        name: "مثال",
+                        value: `${wordData.word.example.japanese}\n${wordData.word.example.reading}\n**${wordData.word.example.arabic}**`
                     },
                     {
-                        name: "Notes",
+                        name: "ملاحظات",
                         value: wordData.word.notes
                     }
                 ],
                 color: 0x7289DA,
                 footer: {
-                    text: `Category: ${wordData.word.category} | 🇯🇵 Japanese Learning Bot`
+                    text: `التصنيف: ${wordData.word.category} | 🇯🇵🤝🇦🇪 تعلم اليابانية للناطقين بالعربية`
                 }
             }]
         };
