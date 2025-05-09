@@ -3,7 +3,7 @@ name: Japanese Word Bot Arabic
 on:
   schedule:
     # 毎日日本時間の午後3時に実行 (UTC: 6時)
-    - cron: '*/30 * * * *'
+    - cron: '*/30 6-17 * * *'  # サウジアラビア時間 12:00-20:00 (UTC+3) の間、30分ごとに実行
   # 手動実行用のトリガー
   workflow_dispatch:
 
