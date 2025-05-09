@@ -2,8 +2,7 @@ name: Japanese Word Bot
 
 on:
   schedule:
-    # 毎日日本時間の午後3時に実行 (UTC: 6時)
-    - cron: '*/30 * * * *'
+    - cron: '*/30 0-11 * * *'  # 日本時間9時から20時まで（UTC 0-11時）の間、30分ごとに実行
   # 手動実行用のトリガー
   workflow_dispatch:
 
